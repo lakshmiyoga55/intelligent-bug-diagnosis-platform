@@ -1,0 +1,367 @@
+.bug-page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #172033;
+}
+
+/* ================= HEADER ================= */
+
+.bug-header {
+  background: #163b6d;
+  color: white;
+}
+
+.header-content {
+  max-width: 1100px;
+  margin: auto;
+  padding: 25px 30px 45px;
+}
+
+.back-btn {
+  border: none;
+  background: transparent;
+  color: #dce7f4;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 38px;
+}
+
+.back-btn:hover {
+  color: white;
+}
+
+.header-title {
+  max-width: 720px;
+}
+
+.page-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  color: #b9d2ed;
+  margin-bottom: 10px;
+}
+
+.header-title h1 {
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.header-title p:last-child {
+  color: #dce7f4;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ================= FORM CONTAINER ================= */
+
+.bug-form-container {
+  max-width: 1000px;
+  margin: -25px auto 70px;
+  padding: 0 25px;
+}
+
+.form-intro {
+  background: white;
+  padding: 25px 30px;
+  border: 1px solid #e2e7ee;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+}
+
+.form-intro h2 {
+  font-size: 19px;
+  margin-bottom: 6px;
+  color: #172033;
+}
+
+.form-intro p {
+  font-size: 13px;
+  color: #7a8496;
+}
+
+/* ================= FORM ================= */
+
+.bug-form {
+  background: white;
+  padding: 30px;
+  border: 1px solid #e2e7ee;
+  border-radius: 0 0 12px 12px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+
+  box-shadow: 0 10px 30px rgba(20, 45, 75, 0.07);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* ================= LABELS ================= */
+
+.form-group label {
+  color: #27364d;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-group label span {
+  color: #d64545;
+  margin-left: 4px;
+}
+
+/* ================= INPUTS ================= */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 13px 14px;
+
+  border: 1px solid #d7dde6;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #27364d;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+
+  outline: none;
+
+  transition: 0.2s;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #a0a8b5;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #245b96;
+  box-shadow: 0 0 0 3px rgba(36, 91, 150, 0.08);
+}
+
+.form-group textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* ================= SECTION TITLE ================= */
+
+.form-section-title {
+  grid-column: 1 / -1;
+
+  padding-top: 10px;
+  padding-bottom: 2px;
+
+  border-top: 1px solid #edf0f4;
+  margin-top: 5px;
+  padding-top: 25px;
+}
+
+.form-section-title h2 {
+  font-size: 18px;
+  color: #172033;
+  margin-bottom: 5px;
+}
+
+.form-section-title p {
+  font-size: 13px;
+  color: #7a8496;
+}
+
+/* ================= CODE INPUT ================= */
+
+.code-input {
+  background: #f8fafc !important;
+
+  font-family: Consolas, "Courier New", monospace !important;
+
+  font-size: 13px !important;
+
+  color: #27364d !important;
+}
+
+.form-group small {
+  margin-top: 7px;
+  color: #8a94a6;
+  font-size: 11px;
+}
+
+/* ================= UPLOAD ================= */
+
+.upload-box {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+
+  background: #fafbfd;
+
+  padding: 35px 25px;
+
+  text-align: center;
+
+  transition: 0.2s;
+}
+
+.upload-box:hover {
+  border-color: #245b96;
+  background: #f7faff;
+}
+
+.upload-icon {
+  width: 48px;
+  height: 48px;
+
+  margin: 0 auto 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eaf1fb;
+  color: #245b96;
+
+  font-size: 23px;
+  font-weight: bold;
+}
+
+.upload-box h3 {
+  color: #27364d;
+  font-size: 15px;
+  margin-bottom: 7px;
+}
+
+.upload-box p {
+  color: #7a8496;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.upload-box span {
+  display: block;
+  color: #9aa3b1;
+  font-size: 11px;
+  margin-bottom: 18px;
+}
+
+.upload-box input {
+  border: none;
+  padding: 0;
+  width: auto;
+  font-size: 12px;
+}
+
+/* ================= ACTIONS ================= */
+
+.form-actions {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 12px;
+
+  border-top: 1px solid #edf0f4;
+
+  padding-top: 25px;
+  margin-top: 5px;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 13px 22px;
+
+  border-radius: 7px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.cancel-btn {
+  background: white;
+  color: #526074;
+  border: 1px solid #d5dce5;
+}
+
+.cancel-btn:hover {
+  background: #f5f7fa;
+}
+
+.submit-btn {
+  background: #163b6d;
+  color: white;
+  border: none;
+
+  min-width: 145px;
+}
+
+.submit-btn span {
+  margin-left: 8px;
+  font-size: 16px;
+}
+
+.submit-btn:hover {
+  background: #0e2c52;
+  transform: translateY(-1px);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 700px) {
+
+  .header-content {
+    padding: 22px 20px 40px;
+  }
+
+  .header-title h1 {
+    font-size: 31px;
+  }
+
+  .bug-form-container {
+    padding: 0 15px;
+  }
+
+  .bug-form {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+  .form-section-title {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    grid-column: auto;
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+  }
+}

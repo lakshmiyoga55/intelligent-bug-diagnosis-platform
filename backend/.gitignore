@@ -1,0 +1,22 @@
+@'
+# Python virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Frontend dependencies
+node_modules/
+build/
+dist/
+
+# Logs
+*.log
+'@ | Set-Content -Path .gitignore

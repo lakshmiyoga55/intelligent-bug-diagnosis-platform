@@ -1,0 +1,17 @@
+[
+    {
+        "bug_id": "BUG-107",
+        "description": "Search fails when the user enters an empty keyword",
+        "component": "Search",
+        "exception_type": "IllegalArgumentException",
+        "severity": "Medium",
+        "priority": "P2",
+        "root_cause": "Empty search input was not validated",
+        "resolution": "Added validation to reject empty search keywords",
+        "confirmed_fix": "Validated the fix by testing empty, valid, and boundary search inputs successfully.",
+        "status": "Resolved",
+        "approval_status": "Approved",
+        "source": "Approved Resolved Bug",
+        "timestamp": "2026-10-06T15:52:43.441450"
+    }
+]

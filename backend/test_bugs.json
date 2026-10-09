@@ -1,0 +1,32 @@
+[
+  {
+    "bug_id": "TEST-001",
+    "bug_description": "Login crashes when valid credentials are entered",
+    "affected_component": "Authentication/Login",
+    "exception_type": "NullPointerException"
+  },
+  {
+    "bug_id": "TEST-002",
+    "bug_description": "Payment fails because database connection is unavailable",
+    "affected_component": "Payment",
+    "exception_type": "SQLException"
+  },
+  {
+    "bug_id": "TEST-003",
+    "bug_description": "Registration fails when email field is empty",
+    "affected_component": "User Registration",
+    "exception_type": "ValidationException"
+  },
+  {
+    "bug_id": "TEST-004",
+    "bug_description": "Dashboard fails to load because API request times out",
+    "affected_component": "Dashboard",
+    "exception_type": "TimeoutException"
+  },
+  {
+    "bug_id": "TEST-005",
+    "bug_description": "Search results are incorrect for a valid keyword",
+    "affected_component": "Search",
+    "exception_type": "UnknownException"
+  }
+]

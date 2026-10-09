@@ -1,0 +1,75 @@
+[
+    {
+        "bug_id": "BUG-101",
+        "description": "Login crashes when the user enters valid credentials",
+        "component": "Authentication/Login",
+        "exception_type": "NullPointerException",
+        "root_cause": "A null user object was accessed during authentication",
+        "resolution": "Added null validation before accessing the user object"
+    },
+    {
+        "bug_id": "BUG-102",
+        "description": "Authentication service fails during login",
+        "component": "Authentication/Login",
+        "exception_type": "NullPointerException",
+        "root_cause": "Missing null validation in the authentication flow",
+        "resolution": "Added input validation and null checks"
+    },
+    {
+        "bug_id": "BUG-103",
+        "description": "Payment page throws database connection error",
+        "component": "Payment",
+        "exception_type": "SQLException",
+        "root_cause": "Database connection was not available",
+        "resolution": "Added connection retry handling and database availability checks"
+    },
+    {
+        "bug_id": "BUG-104",
+        "description": "User registration fails because email field is empty",
+        "component": "User Registration",
+        "exception_type": "ValidationException",
+        "root_cause": "Missing validation for mandatory email field",
+        "resolution": "Added input validation for the email field"
+    },
+    {
+        "bug_id": "BUG-105",
+        "description": "Search fails when the user enters an empty keyword",
+        "component": "Search",
+        "exception_type": "IllegalArgumentException",
+        "severity": "Medium",
+        "priority": "P2",
+        "root_cause": "Empty search input was not validated",
+        "resolution": "Added validation to reject empty search keywords",
+        "status": "Resolved",
+        "source": "Resolved Bug",
+        "timestamp": "2026-10-04T11:51:57.567510"
+    },
+    {
+        "bug_id": "BUG-106",
+        "description": "Dashboard fails to load",
+        "component": "Dashboard",
+        "exception_type": "TimeoutException",
+        "severity": "High",
+        "priority": "P1",
+        "root_cause": "Dashboard API request timed out",
+        "resolution": "Added API timeout handling and retry logic",
+        "status": "Resolved",
+        "source": "Approved Resolved Bug",
+        "timestamp": "2026-10-04T11:54:10.632764"
+    },
+    {
+        "bug_id": "BUG-107",
+        "description": "Search fails when the user enters an empty keyword",
+        "component": "Search",
+        "exception_type": "IllegalArgumentException",
+        "severity": "Medium",
+        "priority": "P2",
+        "root_cause": "Empty search input was not validated",
+        "resolution": "Added validation to reject empty search keywords",
+        "confirmed_fix": "Validated the fix by testing empty, valid, and boundary search inputs successfully.",
+        "status": "Resolved",
+        "approval_status": "Approved",
+        "source": "Approved Resolved Bug",
+        "timestamp": "2026-10-06T16:02:50.173834"
+    }
+]

@@ -1,0 +1,89 @@
+MILESTONE 2 - TEST RESULTS
+
+========================================
+M2.1 - TRIAGE AGENT
+========================================
+
+Test 1:
+Bug: Application crashes when user tries to login
+Expected: High / P1 / Authentication Module
+Result: Passed
+
+Test 2:
+Bug: System crash causes data loss and application is down
+Expected: Critical / P0
+Result: Passed
+
+Test 3:
+Bug: Dashboard is very slow and has performance delay
+Expected: Medium / P2
+Result: Passed
+
+Test 4:
+Bug: Login button color and text alignment are incorrect
+Expected: Low / P3
+Result: Passed
+
+
+========================================
+M2.2 - LOG ANALYSIS AGENT
+========================================
+
+Test 1:
+Exception: NullPointerException
+Expected: UserService.java / getUser / Line 25
+Result: Passed
+
+Test 2:
+Exception: ArrayIndexOutOfBoundsException
+Expected: StudentService.java / getMarks / Line 42
+Result: Passed
+
+Test 3:
+Exception: IllegalArgumentException
+Expected: UserController.java / getUser / Line 18
+Result: Passed
+
+Test 4:
+Empty Error Log
+Expected: Error log is required
+Result: Passed
+
+
+========================================
+M2.3 - MULTI-AGENT ORCHESTRATION
+========================================
+
+Test 1:
+Triage Agent + Log Analysis Agent
+Expected: Combined analysis
+Result: Passed
+
+Test 2:
+Missing Error Log
+Expected: Triage works and missing log is handled
+Result: Passed
+
+
+========================================
+M2.4 - VALIDATION
+========================================
+
+Different severity levels tested:
+Critical, High, Medium, Low
+
+Different components tested:
+Authentication, Database, User Interface
+
+Different exception types tested:
+NullPointerException,
+ArrayIndexOutOfBoundsException,
+IllegalArgumentException
+
+Input conditions tested:
+Bug description + error log
+Bug description without error log
+Empty error log
+
+Overall Result:
+Milestone 2 agent implementation and validation completed.

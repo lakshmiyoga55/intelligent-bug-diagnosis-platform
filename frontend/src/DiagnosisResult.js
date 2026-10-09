@@ -1,0 +1,1089 @@
+import './DiagnosisResult.css';
+
+function DiagnosisResult({ onBack, onNewBug, diagnosis }) {
+
+  if (!diagnosis) {
+    return (
+      <div className="result-page">
+        <div className="result-header">
+          <h1>No Diagnosis Available</h1>
+
+          <button
+            className="primary-result-btn"
+            onClick={onNewBug}
+          >
+            Submit a Bug
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // BACKEND RESPONSE
+  //
+  // app.py returns:
+  //
+  // {
+  //   diagnosis_report: {
+  //      bug: {...},
+  //      triage: {...},
+  //      log_analysis: {...},
+  //      root_cause: {...},
+  //      duplicate_detection: {...},
+  //      remediation: {...}
+  //   }
+  // }
+  // ============================================================
+
+  const report =
+    diagnosis.diagnosis_report || diagnosis;
+
+  // ============================================================
+  // BUG DETAILS
+  // ============================================================
+
+  const bug =
+    report.bug || {};
+
+  const bugTitle =
+    bug.bug_title ||
+    'Not provided';
+
+  const programmingLanguage =
+    bug.programming_language ||
+    'Unknown';
+
+  const bugDescription =
+    bug.description ||
+    bug.bug_description ||
+    'No description';
+
+  const stackTrace =
+    bug.stack_trace || '';
+
+  const errorLogs =
+    bug.error_logs || '';
+
+
+  // ============================================================
+  // TRIAGE
+  // ============================================================
+
+  const triage =
+    report.triage ||
+    diagnosis.triage_analysis ||
+    {};
+
+  const severity =
+    triage.severity ||
+    'Unknown';
+
+  const priority =
+    triage.priority ||
+    'Unknown';
+
+  const component =
+    triage.affected_component ||
+    'Unknown';
+
+  const triageConfidence =
+    triage.confidence !== undefined
+      ? Math.round(Number(triage.confidence) * 100)
+      : 0;
+
+
+  // ============================================================
+  // LOG ANALYSIS
+  // ============================================================
+
+  const log =
+    report.log_analysis ||
+    diagnosis.log_analysis ||
+    {};
+
+  const logConfidence =
+    log.confidence !== undefined
+      ? Math.round(Number(log.confidence) * 100)
+      : 0;
+
+
+  // ============================================================
+  // ROOT CAUSE
+  // ============================================================
+
+  const rootCause =
+    report.root_cause ||
+    diagnosis.root_cause_analysis ||
+    {};
+
+  const rootCauseText =
+    rootCause.conclusion ||
+    rootCause.root_cause ||
+    'Insufficient Evidence';
+
+  const rootCauseConfidence =
+    rootCause.confidence !== undefined
+      ? Math.round(Number(rootCause.confidence) * 100)
+      : 0;
+
+  const rootCauseReasoning =
+    rootCause.reasoning ||
+    'No root cause reasoning available.';
+
+  const rootCauseEvidence =
+    Array.isArray(rootCause.supporting_evidence)
+      ? rootCause.supporting_evidence
+      : [];
+
+
+  // ============================================================
+  // DUPLICATE DETECTION
+  // ============================================================
+
+  const duplicateDetection =
+    report.duplicate_detection ||
+    diagnosis.duplicate_detection ||
+    {};
+
+  const duplicateStatus =
+    duplicateDetection.status ||
+    'New';
+
+  const duplicateMatches =
+    Array.isArray(duplicateDetection.matches)
+      ? duplicateDetection.matches
+      : [];
+
+  const duplicateExplanation =
+    duplicateDetection.explanation ||
+    'No duplicate analysis explanation available.';
+
+
+  // ============================================================
+  // REMEDIATION
+  // ============================================================
+
+  const remediation =
+    report.remediation ||
+    diagnosis.remediation ||
+    {};
+
+  const recommendedFix =
+    remediation.recommended_fix ||
+    'Insufficient Evidence';
+
+  const remediationConfidence =
+    remediation.confidence !== undefined
+      ? Math.round(Number(remediation.confidence) * 100)
+      : 0;
+
+  const evidenceType =
+    remediation.evidence_type ||
+    'None';
+
+  const remediationEvidence =
+    Array.isArray(remediation.supporting_evidence)
+      ? remediation.supporting_evidence
+      : [];
+
+
+  // ============================================================
+  // UI
+  // ============================================================
+
+  return (
+    <div className="result-page">
+
+      {/* ======================================================
+          HEADER
+      ====================================================== */}
+
+      <div className="result-header">
+
+        <button
+          className="back-btn"
+          onClick={onBack}
+        >
+          ← Back to Home
+        </button>
+
+        <p className="page-label">
+          AI DIAGNOSIS
+        </p>
+
+        <h1>
+          Bug Diagnosis Result
+        </h1>
+
+        <p>
+          Structured analysis generated by the multi-agent
+          diagnosis pipeline.
+        </p>
+
+      </div>
+
+
+      <div className="result-container">
+
+
+        {/* ====================================================
+            BUG DETAILS
+        ==================================================== */}
+
+        <div className="result-card">
+
+          <div className="result-title">
+
+            <div className="result-icon">
+              🐞
+            </div>
+
+            <div>
+
+              <h2>
+                Bug Details
+              </h2>
+
+              <p>
+                Original submitted bug information
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="summary-grid">
+
+            <div>
+
+              <span>
+                Bug Title
+              </span>
+
+              <strong>
+                {bugTitle}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Programming Language
+              </span>
+
+              <strong>
+                {programmingLanguage}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Description
+            </h3>
+
+            <p>
+              {bugDescription}
+            </p>
+
+          </div>
+
+
+          {stackTrace && (
+
+            <div className="root-cause">
+
+              <h3>
+                Stack Trace
+              </h3>
+
+              <pre>
+                {stackTrace}
+              </pre>
+
+            </div>
+
+          )}
+
+
+          {errorLogs && (
+
+            <div className="root-cause">
+
+              <h3>
+                Error Logs
+              </h3>
+
+              <pre>
+                {errorLogs}
+              </pre>
+
+            </div>
+
+          )}
+
+        </div>
+
+
+        {/* ====================================================
+            TRIAGE
+        ==================================================== */}
+
+        <div className="result-card">
+
+          <div className="result-title">
+
+            <div className="result-icon">
+              🎯
+            </div>
+
+            <div>
+
+              <h2>
+                Triage Analysis
+              </h2>
+
+              <p>
+                Severity, priority and affected component
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="summary-grid">
+
+            <div>
+
+              <span>
+                Severity
+              </span>
+
+              <strong>
+                {severity}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Priority
+              </span>
+
+              <strong>
+                {priority}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Component
+              </span>
+
+              <strong>
+                {component}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Confidence
+              </span>
+
+              <strong>
+                {triageConfidence}%
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              🧠 Reasoning
+            </h3>
+
+            <p>
+              {triage.reasoning ||
+                'No reasoning returned by the Triage Agent.'}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            LOG ANALYSIS
+        ==================================================== */}
+
+        <div className="result-card">
+
+          <div className="result-title">
+
+            <div className="result-icon">
+              📋
+            </div>
+
+            <div>
+
+              <h2>
+                Log Analysis
+              </h2>
+
+              <p>
+                Exception and stack trace analysis
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="summary-grid">
+
+            <div>
+
+              <span>
+                Exception Type
+              </span>
+
+              <strong>
+                {log.exception_type ||
+                  'Not identified'}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Error Message
+              </span>
+
+              <strong>
+                {log.error_message ||
+                  'Not identified'}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                File
+              </span>
+
+              <strong>
+                {log.file ||
+                  'Not identified'}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Class
+              </span>
+
+              <strong>
+                {log.class ||
+                  'Not identified'}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Method
+              </span>
+
+              <strong>
+                {log.method ||
+                  'Not identified'}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Line
+              </span>
+
+              <strong>
+                {log.line ||
+                  'Not identified'}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Confidence
+              </span>
+
+              <strong>
+                {logConfidence}%
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Failure Point
+            </h3>
+
+            <p>
+              {log.failure_point ||
+                'No failure point identified.'}
+            </p>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Affected Code Path
+            </h3>
+
+            <p>
+              {log.affected_code_path ||
+                log.code_path ||
+                'No code path identified.'}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            ROOT CAUSE
+        ==================================================== */}
+
+        <div className="result-card">
+
+          <div className="result-title">
+
+            <div className="result-icon">
+              🔍
+            </div>
+
+            <div>
+
+              <h2>
+                Root Cause Analysis
+              </h2>
+
+              <p>
+                Probable root cause from available evidence
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Probable Root Cause
+            </h3>
+
+            <p>
+              {rootCauseText}
+            </p>
+
+          </div>
+
+
+          <div className="summary-grid">
+
+            <div>
+
+              <span>
+                Confidence
+              </span>
+
+              <strong>
+                {rootCauseConfidence}%
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Evidence Type
+              </span>
+
+              <strong>
+                {rootCause.evidence_type || 'None'}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              🧠 Reasoning
+            </h3>
+
+            <p>
+              {rootCauseReasoning}
+            </p>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Supporting Historical Evidence
+            </h3>
+
+
+            {rootCauseEvidence.length > 0 ? (
+
+              rootCauseEvidence.map(
+                (evidence, index) => (
+
+                  <div key={index}>
+
+                    <p>
+                      <strong>
+                        Bug ID:
+                      </strong>{' '}
+                      {evidence.bug_id ||
+                        'Unknown'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Description:
+                      </strong>{' '}
+                      {evidence.description ||
+                        'Not available'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Historical Resolution:
+                      </strong>{' '}
+                      {evidence.resolution ||
+                        'Not available'}
+                    </p>
+
+                    <hr />
+
+                  </div>
+
+                )
+              )
+
+            ) : (
+
+              <p>
+                No supporting historical evidence available.
+              </p>
+
+            )}
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            DUPLICATE DETECTION
+        ==================================================== */}
+
+        <div className="result-card">
+
+          <div className="result-title">
+
+            <div className="result-icon">
+              🔄
+            </div>
+
+            <div>
+
+              <h2>
+                Duplicate Detection
+              </h2>
+
+              <p>
+                Historical defect similarity analysis
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Status
+            </h3>
+
+            <p>
+              <strong>
+                {duplicateStatus}
+              </strong>
+            </p>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Explanation
+            </h3>
+
+            <p>
+              {duplicateExplanation}
+            </p>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Matching Historical Bugs
+            </h3>
+
+
+            {duplicateMatches.length > 0 ? (
+
+              duplicateMatches.map(
+                (match, index) => (
+
+                  <div key={index}>
+
+                    <p>
+                      <strong>
+                        Bug ID:
+                      </strong>{' '}
+                      {match.bug_id ||
+                        'Unknown'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Status:
+                      </strong>{' '}
+                      {match.status ||
+                        'Unknown'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Similarity:
+                      </strong>{' '}
+                      {match.similarity_percentage !== undefined
+                        ? `${match.similarity_percentage}%`
+                        : match.similarity_score !== undefined
+                          ? `${Math.round(
+                              match.similarity_score * 100
+                            )}%`
+                          : 'Not available'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Description:
+                      </strong>{' '}
+                      {match.description ||
+                        'Not available'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Resolution:
+                      </strong>{' '}
+                      {match.resolution ||
+                        'Not available'}
+                    </p>
+
+                    <hr />
+
+                  </div>
+
+                )
+              )
+
+            ) : (
+
+              <p>
+                No similar historical bugs found.
+              </p>
+
+            )}
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            REMEDIATION
+        ==================================================== */}
+
+        <div className="result-card">
+
+          <div className="result-title">
+
+            <div className="result-icon">
+              🛠️
+            </div>
+
+            <div>
+
+              <h2>
+                Remediation Recommendation
+              </h2>
+
+              <p>
+                Recommended corrective action
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Recommended Fix
+            </h3>
+
+            <p>
+              {recommendedFix}
+            </p>
+
+          </div>
+
+
+          <div className="summary-grid">
+
+            <div>
+
+              <span>
+                Confidence
+              </span>
+
+              <strong>
+                {remediationConfidence}%
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Evidence Type
+              </span>
+
+              <strong>
+                {evidenceType}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <h3>
+              Supporting Evidence
+            </h3>
+
+
+            {remediationEvidence.length > 0 ? (
+
+              remediationEvidence.map(
+                (evidence, index) => (
+
+                  <div key={index}>
+
+                    <p>
+                      <strong>
+                        Historical Bug:
+                      </strong>{' '}
+                      {evidence.bug_id ||
+                        'Unknown'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Historical Resolution:
+                      </strong>{' '}
+                      {evidence.resolution ||
+                        'Not available'}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Similarity Score:
+                      </strong>{' '}
+                      {evidence.similarity_score !== undefined
+                        ? evidence.similarity_score
+                        : 'Not available'}
+                    </p>
+
+                    <hr />
+
+                  </div>
+
+                )
+              )
+
+            ) : (
+
+              <p>
+                No supporting evidence available.
+              </p>
+
+            )}
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            PIPELINE
+        ==================================================== */}
+
+        <div className="result-card">
+
+          <div className="result-title">
+
+            <div className="result-icon">
+              ⚙️
+            </div>
+
+            <div>
+
+              <h2>
+                Diagnosis Pipeline
+              </h2>
+
+              <p>
+                Multi-agent processing workflow
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="root-cause">
+
+            <p>
+              <strong>1.</strong> Bug Submission
+            </p>
+
+            <p>
+              <strong>2.</strong> Triage Agent
+            </p>
+
+            <p>
+              <strong>3.</strong> Log Analysis
+            </p>
+
+            <p>
+              <strong>4.</strong> Root Cause
+            </p>
+
+            <p>
+              <strong>5.</strong> Duplicate Detection
+            </p>
+
+            <p>
+              <strong>6.</strong> Remediation
+            </p>
+
+            <p>
+              <strong>7.</strong> Structured Report
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            ACTIONS
+        ==================================================== */}
+
+        <div className="result-actions">
+
+          <button
+            className="secondary-btn"
+            onClick={onNewBug}
+          >
+            + Submit Another Bug
+          </button>
+
+
+          <button
+            className="primary-result-btn"
+            onClick={onBack}
+          >
+            Back to Home →
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+
+export default DiagnosisResult;
