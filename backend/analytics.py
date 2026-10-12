@@ -1,11 +1,10 @@
+
 import json
 import os
 from collections import Counter
 from datetime import datetime
 
-import numpy as np
-
-from backend.defect_retriever import model
+from backend.defect_retriever import text_similarity
 
 
 # ============================================================
@@ -16,13 +15,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
 HISTORICAL_FILE = os.path.join(
-    PROJECT_ROOT,
-    "historical_defects.json"
+    PROJECT_ROOT, "historical_defects.json"
 )
-
 SUBMITTED_FILE = os.path.join(
-    PROJECT_ROOT,
-    "submitted_bugs.json"
+    PROJECT_ROOT, "submitted_bugs.json"
 )
 
 
@@ -31,166 +27,93 @@ SUBMITTED_FILE = os.path.join(
 # ============================================================
 
 def load_json_file(filename):
-
     try:
-
-        with open(
-            filename,
-            "r",
-            encoding="utf-8"
-        ) as file:
-
+        with open(filename, "r", encoding="utf-8") as file:
             data = json.load(file)
-
-            if isinstance(data, list):
-                return data
-
-            return []
-
-    except (
-        FileNotFoundError,
-        json.JSONDecodeError,
-        OSError
-    ):
-
+            return data if isinstance(data, list) else []
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
         return []
 
 
 # ============================================================
-# CLEAN VALUE
+# CLEAN AND COUNT VALUES
 # ============================================================
 
-def clean_value(
-    value,
-    default="Unknown"
-):
-
+def clean_value(value, default="Unknown"):
     if value is None:
         return default
 
     value = str(value).strip()
-
-    if not value:
-        return default
-
-    return value
+    return value if value else default
 
 
-# ============================================================
-# COUNT VALUES
-# ============================================================
-
-def count_values(
-    records,
-    field
-):
-
-    values = []
-
-    for record in records:
-
-        value = clean_value(
-            record.get(field)
-        )
-
-        values.append(value)
+def count_values(records, field):
+    values = [
+        clean_value(record.get(field))
+        for record in records
+    ]
 
     return dict(
         sorted(
             Counter(values).items(),
-            key=lambda x: (-x[1], x[0])
+            key=lambda item: (-item[1], item[0])
         )
     )
 
 
-# ============================================================
-# MOST COMMON VALUE
-# ============================================================
-
-def get_most_common(
-    frequency
-):
-
+def get_most_common(frequency):
     if not frequency:
         return None
 
     item = max(
         frequency.items(),
-        key=lambda x: x[1]
+        key=lambda pair: pair[1]
     )
+    return [item[0], item[1]]
 
-    return [
-        item[0],
-        item[1]
-    ]
+
+def get_component(record):
+    return record.get(
+        "component",
+        record.get("affected_component")
+    )
 
 
 # ============================================================
-# CREATE SEARCH TEXT
+# CREATE TEXT FOR BUG SIMILARITY
 # ============================================================
 
 def create_cluster_text(record):
-
     description = clean_value(
         record.get(
             "bug_description",
-            record.get(
-                "description",
-                ""
-            )
+            record.get("description", "")
         ),
         ""
     )
 
     component = clean_value(
-        record.get(
-            "component",
-            record.get(
-                "affected_component",
-                ""
-            )
-        ),
-        ""
+        get_component(record), ""
     )
 
     exception_type = clean_value(
-        record.get(
-            "exception_type",
-            ""
-        ),
-        ""
+        record.get("exception_type", ""), ""
     )
 
     root_cause = clean_value(
-        record.get(
-            "root_cause",
-            ""
-        ),
-        ""
+        record.get("root_cause", ""), ""
     )
 
     programming_language = clean_value(
-        record.get(
-            "programming_language",
-            ""
-        ),
-        ""
+        record.get("programming_language", ""), ""
     )
 
     stack_trace = clean_value(
-        record.get(
-            "stack_trace",
-            ""
-        ),
-        ""
+        record.get("stack_trace", ""), ""
     )
 
     error_logs = clean_value(
-        record.get(
-            "error_logs",
-            ""
-        ),
-        ""
+        record.get("error_logs", ""), ""
     )
 
     return (
@@ -205,371 +128,158 @@ def create_cluster_text(record):
 
 
 # ============================================================
-# SEMANTIC CLUSTERING
+# LIGHTWEIGHT BUG CLUSTERING
+# No SentenceTransformer, PyTorch or NumPy required
 # ============================================================
 
 def generate_semantic_clusters(records):
-
     """
-    Generate semantic clusters only among submitted bugs.
+    Group similar submitted bugs using lightweight
+    word-frequency cosine similarity.
 
-    Historical defects are NOT added as cluster members.
-    The same submitted bug is assigned to only one cluster.
+    Historical defects are not cluster members.
+    A submitted bug belongs to at most one cluster.
 
-    Embeddings are generated using the same
-    SentenceTransformer model used by the defect retriever.
+    Note: This is lexical similarity, not embedding-based
+    semantic similarity.
     """
-
-    # --------------------------------------------------------
-    # Only submitted records
-    # --------------------------------------------------------
 
     submitted_records = [
-
-        record
-
-        for record in records
-
-        if record.get(
-            "record_type"
-        ) == "Submitted"
-
+        record for record in records
+        if record.get("record_type") == "Submitted"
     ]
 
     if len(submitted_records) < 2:
         return []
 
-
-    # --------------------------------------------------------
-    # Similarity threshold
-    # --------------------------------------------------------
-
-    SIMILARITY_THRESHOLD = 0.70
-
-
-    # --------------------------------------------------------
-    # Create bug texts
-    # --------------------------------------------------------
+    # Lexical similarity threshold: tune after testing.
+    SIMILARITY_THRESHOLD = 0.30
 
     bug_texts = []
-
     bug_ids = []
-
     components = []
 
-
-    for index, record in enumerate(
-        submitted_records
-    ):
-
-        bug_id = clean_value(
-            record.get(
-                "bug_id",
-                f"BUG-{index + 1}"
-            ),
-            f"BUG-{index + 1}"
-        )
+    for index, record in enumerate(submitted_records):
+        fallback_id = f"BUG-{index + 1}"
 
         bug_ids.append(
-            bug_id
+            clean_value(record.get("bug_id"), fallback_id)
         )
 
-
-        bug_texts.append(
-            create_cluster_text(
-                record
-            )
-        )
-
-
-        component = clean_value(
-            record.get(
-                "component",
-                record.get(
-                    "affected_component",
-                    ""
-                )
-            ),
-            ""
-        )
+        bug_texts.append(create_cluster_text(record))
 
         components.append(
-            component
+            clean_value(get_component(record), "")
         )
 
+    # Calculate pairwise similarities without NumPy.
+    total_bugs = len(submitted_records)
 
-    # --------------------------------------------------------
-    # Generate embeddings
-    # --------------------------------------------------------
+    similarity_matrix = [
+        [0.0] * total_bugs
+        for _ in range(total_bugs)
+    ]
 
-    try:
+    for i in range(total_bugs):
+        similarity_matrix[i][i] = 1.0
 
-        embeddings = model.encode(
-            bug_texts,
-            normalize_embeddings=True
-        )
+        for j in range(i + 1, total_bugs):
+            similarity = text_similarity(
+                bug_texts[i],
+                bug_texts[j]
+            )
 
-        embeddings = np.asarray(
-            embeddings
-        )
-
-    except Exception as error:
-
-        print(
-            "Semantic clustering error:",
-            error
-        )
-
-        return []
-
-
-    # --------------------------------------------------------
-    # Cosine similarity matrix
-    #
-    # Because embeddings are normalized,
-    # dot product = cosine similarity.
-    # --------------------------------------------------------
-
-    similarity_matrix = np.matmul(
-        embeddings,
-        embeddings.T
-    )
-
-
-    # --------------------------------------------------------
-    # Build graph of semantically similar bugs
-    # --------------------------------------------------------
-
-    total_bugs = len(
-        submitted_records
-    )
+            similarity_matrix[i][j] = similarity
+            similarity_matrix[j][i] = similarity
 
     visited = set()
-
     clusters = []
 
-
-    for start_index in range(
-        total_bugs
-    ):
-
+    # Find connected groups of similar submitted bugs.
+    for start_index in range(total_bugs):
         if start_index in visited:
             continue
 
-
-        # ----------------------------------------------------
-        # Breadth-first search
-        # to find connected semantic bugs
-        # ----------------------------------------------------
-
-        queue = [
-            start_index
-        ]
-
+        queue = [start_index]
+        visited.add(start_index)
         cluster_indexes = set()
 
-        visited.add(
-            start_index
-        )
-
-
         while queue:
+            current_index = queue.pop(0)
+            cluster_indexes.add(current_index)
 
-            current_index = queue.pop(
-                0
-            )
-
-            cluster_indexes.add(
-                current_index
-            )
-
-
-            for other_index in range(
-                total_bugs
-            ):
-
+            for other_index in range(total_bugs):
                 if other_index in visited:
                     continue
 
+                similarity = similarity_matrix[
+                    current_index
+                ][other_index]
 
-                similarity = float(
-                    similarity_matrix[
-                        current_index,
-                        other_index
-                    ]
-                )
+                if similarity >= SIMILARITY_THRESHOLD:
+                    visited.add(other_index)
+                    queue.append(other_index)
 
-
-                if (
-                    similarity
-                    >= SIMILARITY_THRESHOLD
-                ):
-
-                    visited.add(
-                        other_index
-                    )
-
-                    queue.append(
-                        other_index
-                    )
-
-
-        # ----------------------------------------------------
-        # Ignore single-bug clusters
-        # ----------------------------------------------------
-
-        if len(
-            cluster_indexes
-        ) < 2:
-
+        # Ignore groups containing only one bug.
+        if len(cluster_indexes) < 2:
             continue
 
-
-        sorted_indexes = sorted(
-            cluster_indexes
-        )
-
+        sorted_indexes = sorted(cluster_indexes)
 
         cluster_bug_ids = [
-
             bug_ids[index]
-
-            for index
-            in sorted_indexes
-
+            for index in sorted_indexes
         ]
-
-
-        # ----------------------------------------------------
-        # Calculate pairwise similarity
-        # ----------------------------------------------------
 
         pairwise_scores = []
 
-
-        for i in range(
-            len(sorted_indexes)
-        ):
-
-            for j in range(
-                i + 1,
-                len(sorted_indexes)
-            ):
-
+        for i in range(len(sorted_indexes)):
+            for j in range(i + 1, len(sorted_indexes)):
                 index_a = sorted_indexes[i]
-
                 index_b = sorted_indexes[j]
 
-
-                similarity = float(
-                    similarity_matrix[
-                        index_a,
-                        index_b
-                    ]
-                )
-
-
                 pairwise_scores.append(
-                    similarity
+                    similarity_matrix[index_a][index_b]
                 )
 
-
-        if pairwise_scores:
-
-            average_similarity = round(
-                (
-                    sum(
-                        pairwise_scores
-                    )
-                    /
-                    len(
-                        pairwise_scores
-                    )
-                ) * 100,
+        average_similarity = (
+            round(
+                sum(pairwise_scores)
+                / len(pairwise_scores)
+                * 100,
                 2
             )
-
-        else:
-
-            average_similarity = 0
-
-
-        # ----------------------------------------------------
-        # Determine cluster theme
-        # ----------------------------------------------------
+            if pairwise_scores else 0
+        )
 
         cluster_components = [
-
             components[index]
-
-            for index
-            in sorted_indexes
-
+            for index in sorted_indexes
             if components[index]
-            and components[index]
-            != "Unknown"
-
+            and components[index] != "Unknown"
         ]
 
-
         if cluster_components:
-
-            component_counter = Counter(
+            theme = Counter(
                 cluster_components
-            )
-
-            theme = component_counter.most_common(
-                1
-            )[0][0]
-
+            ).most_common(1)[0][0]
         else:
+            theme = "Similar Bug Pattern"
 
-            theme = "Semantic Bug Pattern"
+        cluster_number = len(clusters) + 1
 
-
-        # ----------------------------------------------------
-        # Create cluster
-        # ----------------------------------------------------
-
-        cluster_number = (
-            len(clusters) + 1
-        )
-
-
-        cluster = {
-
-            "cluster_id":
-                f"CLUSTER-{cluster_number}",
-
-            "theme":
-                theme,
-
-            "bug_count":
-                len(cluster_bug_ids),
-
-            "bug_ids":
-                cluster_bug_ids,
-
-            "average_similarity":
-                average_similarity,
-
-            "similarity_threshold":
-                SIMILARITY_THRESHOLD,
-
-            "description":
-                (
-                    f"{len(cluster_bug_ids)} "
-                    f"submitted bugs form a "
-                    f"semantic cluster around "
-                    f"{theme}."
-                )
-        }
-
-
-        clusters.append(
-            cluster
-        )
-
+        clusters.append({
+            "cluster_id": f"CLUSTER-{cluster_number}",
+            "theme": theme,
+            "bug_count": len(cluster_bug_ids),
+            "bug_ids": cluster_bug_ids,
+            "average_similarity": average_similarity,
+            "similarity_threshold": SIMILARITY_THRESHOLD,
+            "description": (
+                f"{len(cluster_bug_ids)} submitted bugs "
+                f"form a similar-text cluster around {theme}."
+            )
+        })
 
     return clusters
 
@@ -578,718 +288,244 @@ def generate_semantic_clusters(records):
 # GENERATE ANALYTICS
 # ============================================================
 
-def generate_analytics(
-    filters=None
-):
-
-    # --------------------------------------------------------
-    # LOAD DATA
-    # --------------------------------------------------------
-
-    historical = load_json_file(
-        HISTORICAL_FILE
-    )
-
-    submitted = load_json_file(
-        SUBMITTED_FILE
-    )
+def generate_analytics(filters=None):
+    historical = load_json_file(HISTORICAL_FILE)
+    submitted = load_json_file(SUBMITTED_FILE)
 
     all_records = []
 
-
-    # --------------------------------------------------------
-    # HISTORICAL RECORDS
-    # --------------------------------------------------------
-
     for record in historical:
-
-        record = dict(
-            record
-        )
-
-        record["record_type"] = (
-            "Historical"
-        )
-
-        all_records.append(
-            record
-        )
-
-
-    # --------------------------------------------------------
-    # SUBMITTED RECORDS
-    # --------------------------------------------------------
+        item = dict(record)
+        item["record_type"] = "Historical"
+        all_records.append(item)
 
     for record in submitted:
+        item = dict(record)
+        item["record_type"] = "Submitted"
+        all_records.append(item)
 
-        record = dict(
-            record
-        )
-
-        record["record_type"] = (
-            "Submitted"
-        )
-
-        all_records.append(
-            record
-        )
-
+    filters = filters or {}
+    filtered_records = []
 
     # --------------------------------------------------------
     # APPLY FILTERS
     # --------------------------------------------------------
 
-    filters = filters or {}
-
-    filtered_records = []
-
-
     for record in all_records:
-
-        component = clean_value(
-            record.get(
-                "component",
-                record.get(
-                    "affected_component"
-                )
-            )
-        )
-
-
-        severity = clean_value(
-            record.get(
-                "severity"
-            )
-        )
-
-
-        priority = clean_value(
-            record.get(
-                "priority"
-            )
-        )
-
-
+        component = clean_value(get_component(record))
+        severity = clean_value(record.get("severity"))
+        priority = clean_value(record.get("priority"))
         exception_type = clean_value(
-            record.get(
-                "exception_type"
-            )
+            record.get("exception_type")
         )
 
-
-        # ----------------------------------------------------
-        # COMPONENT FILTER
-        # ----------------------------------------------------
-
         if (
-            filters.get(
-                "component"
-            )
-            and component
-            != filters[
-                "component"
-            ]
+            filters.get("component")
+            and component != filters["component"]
         ):
-
             continue
 
-
-        # ----------------------------------------------------
-        # SEVERITY FILTER
-        # ----------------------------------------------------
-
         if (
-            filters.get(
-                "severity"
-            )
-            and severity
-            != filters[
-                "severity"
-            ]
+            filters.get("severity")
+            and severity != filters["severity"]
         ):
-
             continue
 
-
-        # ----------------------------------------------------
-        # PRIORITY FILTER
-        # ----------------------------------------------------
-
         if (
-            filters.get(
-                "priority"
-            )
-            and priority
-            != filters[
-                "priority"
-            ]
+            filters.get("priority")
+            and priority != filters["priority"]
         ):
-
             continue
 
-
-        # ----------------------------------------------------
-        # EXCEPTION FILTER
-        # ----------------------------------------------------
-
         if (
-            filters.get(
-                "exception_type"
-            )
-            and exception_type
-            != filters[
-                "exception_type"
-            ]
+            filters.get("exception_type")
+            and exception_type != filters["exception_type"]
         ):
-
             continue
 
+        timestamp = str(record.get("timestamp") or "")
 
-        # ----------------------------------------------------
-        # DATE FILTER
-        # ----------------------------------------------------
+        if filters.get("start_date") and timestamp:
+            if timestamp[:10] < filters["start_date"]:
+                continue
 
-        timestamp = record.get(
-            "timestamp",
-            ""
-        )
+        if filters.get("end_date") and timestamp:
+            if timestamp[:10] > filters["end_date"]:
+                continue
 
+        filtered_records.append(record)
 
-        if filters.get(
-            "start_date"
-        ):
-
-            if timestamp:
-
-                record_date = (
-                    timestamp[:10]
-                )
-
-                if (
-                    record_date
-                    <
-                    filters[
-                        "start_date"
-                    ]
-                ):
-
-                    continue
-
-
-        if filters.get(
-            "end_date"
-        ):
-
-            if timestamp:
-
-                record_date = (
-                    timestamp[:10]
-                )
-
-                if (
-                    record_date
-                    >
-                    filters[
-                        "end_date"
-                    ]
-                ):
-
-                    continue
-
-
-        filtered_records.append(
-            record
-        )
-
-
-    # ========================================================
-    # FREQUENCY DATA
-    # ========================================================
+    # --------------------------------------------------------
+    # FREQUENCY COUNTS
+    # --------------------------------------------------------
 
     component_frequency = {}
-
     exception_frequency = {}
-
     severity_frequency = {}
-
     priority_frequency = {}
-
     root_cause_frequency = {}
-
     resolution_frequency = {}
-
     duplicate_status_frequency = {}
 
-
     for record in filtered_records:
-
-        component = clean_value(
-            record.get(
-                "component",
-                record.get(
-                    "affected_component"
-                )
+        fields = {
+            "component": clean_value(get_component(record)),
+            "exception": clean_value(
+                record.get("exception_type")
+            ),
+            "severity": clean_value(record.get("severity")),
+            "priority": clean_value(record.get("priority")),
+            "root_cause": clean_value(
+                record.get("root_cause")
+            ),
+            "resolution": clean_value(
+                record.get("resolution")
+            ),
+            "duplicate_status": clean_value(
+                record.get("duplicate_status")
             )
-        )
+        }
 
+        frequency_targets = {
+            "component": component_frequency,
+            "exception": exception_frequency,
+            "severity": severity_frequency,
+            "priority": priority_frequency,
+            "root_cause": root_cause_frequency,
+            "resolution": resolution_frequency,
+            "duplicate_status": duplicate_status_frequency
+        }
 
-        exception_type = clean_value(
-            record.get(
-                "exception_type"
-            )
-        )
+        for field, value in fields.items():
+            target = frequency_targets[field]
+            target[value] = target.get(value, 0) + 1
 
-
-        severity = clean_value(
-            record.get(
-                "severity"
-            )
-        )
-
-
-        priority = clean_value(
-            record.get(
-                "priority"
-            )
-        )
-
-
-        root_cause = clean_value(
-            record.get(
-                "root_cause"
-            )
-        )
-
-
-        resolution = clean_value(
-            record.get(
-                "resolution"
-            )
-        )
-
-
-        duplicate_status = clean_value(
-            record.get(
-                "duplicate_status"
-            )
-        )
-
-
-        # ----------------------------------------------------
-        # COMPONENT
-        # ----------------------------------------------------
-
-        component_frequency[
-            component
-        ] = (
-            component_frequency.get(
-                component,
-                0
-            ) + 1
-        )
-
-
-        # ----------------------------------------------------
-        # EXCEPTION
-        # ----------------------------------------------------
-
-        exception_frequency[
-            exception_type
-        ] = (
-            exception_frequency.get(
-                exception_type,
-                0
-            ) + 1
-        )
-
-
-        # ----------------------------------------------------
-        # SEVERITY
-        # ----------------------------------------------------
-
-        severity_frequency[
-            severity
-        ] = (
-            severity_frequency.get(
-                severity,
-                0
-            ) + 1
-        )
-
-
-        # ----------------------------------------------------
-        # PRIORITY
-        # ----------------------------------------------------
-
-        priority_frequency[
-            priority
-        ] = (
-            priority_frequency.get(
-                priority,
-                0
-            ) + 1
-        )
-
-
-        # ----------------------------------------------------
-        # ROOT CAUSE
-        # ----------------------------------------------------
-
-        root_cause_frequency[
-            root_cause
-        ] = (
-            root_cause_frequency.get(
-                root_cause,
-                0
-            ) + 1
-        )
-
-
-        # ----------------------------------------------------
-        # RESOLUTION
-        # ----------------------------------------------------
-
-        resolution_frequency[
-            resolution
-        ] = (
-            resolution_frequency.get(
-                resolution,
-                0
-            ) + 1
-        )
-
-
-        # ----------------------------------------------------
-        # DUPLICATE STATUS
-        # ----------------------------------------------------
-
-        duplicate_status_frequency[
-            duplicate_status
-        ] = (
-            duplicate_status_frequency.get(
-                duplicate_status,
-                0
-            ) + 1
-        )
-
-
-    # ========================================================
+    # --------------------------------------------------------
     # RECURRING PATTERNS
-    # ========================================================
+    # --------------------------------------------------------
 
     recurring_patterns = []
 
-
-    # --------------------------------------------------------
-    # COMPONENT PATTERNS
-    # --------------------------------------------------------
-
-    for component, count in (
-        component_frequency.items()
-    ):
-
-        if (
-            component != "Unknown"
-            and count >= 2
-        ):
-
+    for component, count in component_frequency.items():
+        if component != "Unknown" and count >= 2:
             recurring_patterns.append({
-
-                "type":
-                    "Affected Component",
-
-                "pattern":
-                    component,
-
-                "frequency":
-                    count,
-
-                "description":
-                    (
-                        f"{component} was affected "
-                        f"by {count} defects."
-                    )
+                "type": "Affected Component",
+                "pattern": component,
+                "frequency": count,
+                "description": (
+                    f"{component} was affected by {count} defects."
+                )
             })
 
-
-    # --------------------------------------------------------
-    # EXCEPTION PATTERNS
-    # --------------------------------------------------------
-
-    for (
-        exception_type,
-        count
-    ) in exception_frequency.items():
-
-        if (
-            exception_type != "Unknown"
-            and count >= 2
-        ):
-
+    for exception_type, count in exception_frequency.items():
+        if exception_type != "Unknown" and count >= 2:
             recurring_patterns.append({
-
-                "type":
-                    "Exception Type",
-
-                "pattern":
-                    exception_type,
-
-                "frequency":
-                    count,
-
-                "description":
-                    (
-                        f"{exception_type} occurred "
-                        f"in {count} defects."
-                    )
+                "type": "Exception Type",
+                "pattern": exception_type,
+                "frequency": count,
+                "description": (
+                    f"{exception_type} occurred in {count} defects."
+                )
             })
 
+    # --------------------------------------------------------
+    # BUG CLUSTERS
+    # --------------------------------------------------------
 
-    # ========================================================
-    # SEMANTIC CLUSTERS
-    # ========================================================
-
-    semantic_clusters = (
-        generate_semantic_clusters(
-            filtered_records
-        )
+    semantic_clusters = generate_semantic_clusters(
+        filtered_records
     )
 
-
-    # ========================================================
-    # TIME ANALYSIS
-    # ========================================================
+    # --------------------------------------------------------
+    # MONTHLY TIME ANALYSIS
+    # --------------------------------------------------------
 
     time_analysis = {}
 
-
     for record in filtered_records:
-
-        timestamp = record.get(
-            "timestamp"
-        )
-
+        timestamp = record.get("timestamp")
 
         if not timestamp:
             continue
 
-
         try:
-
-            date_value = (
-                datetime.fromisoformat(
-                    timestamp.replace(
-                        "Z",
-                        ""
-                    )
-                )
+            date_value = datetime.fromisoformat(
+                str(timestamp).replace("Z", "+00:00")
             )
 
+            month_key = date_value.strftime("%Y-%m")
 
-            month_key = (
-                date_value.strftime(
-                    "%Y-%m"
-                )
+            time_analysis[month_key] = (
+                time_analysis.get(month_key, 0) + 1
             )
 
-
-            time_analysis[
-                month_key
-            ] = (
-                time_analysis.get(
-                    month_key,
-                    0
-                ) + 1
-            )
-
-
-        except (
-            ValueError,
-            TypeError
-        ):
-
+        except (ValueError, TypeError):
             continue
 
-
-    # ========================================================
+    # --------------------------------------------------------
     # AVAILABLE FILTER VALUES
-    # ========================================================
+    # --------------------------------------------------------
 
-    available_components = sorted(
-        set(
+    available_components = sorted({
+        clean_value(get_component(record))
+        for record in all_records
+    })
 
-            clean_value(
-                r.get(
-                    "component",
-                    r.get(
-                        "affected_component"
-                    )
-                )
-            )
+    available_severities = sorted({
+        clean_value(record.get("severity"))
+        for record in all_records
+    })
 
-            for r in all_records
+    available_priorities = sorted({
+        clean_value(record.get("priority"))
+        for record in all_records
+    })
 
-        )
-    )
+    available_exceptions = sorted({
+        clean_value(record.get("exception_type"))
+        for record in all_records
+    })
 
-
-    available_severities = sorted(
-        set(
-
-            clean_value(
-                r.get(
-                    "severity"
-                )
-            )
-
-            for r in all_records
-
-        )
-    )
-
-
-    available_priorities = sorted(
-        set(
-
-            clean_value(
-                r.get(
-                    "priority"
-                )
-            )
-
-            for r in all_records
-
-        )
-    )
-
-
-    available_exceptions = sorted(
-        set(
-
-            clean_value(
-                r.get(
-                    "exception_type"
-                )
-            )
-
-            for r in all_records
-
-        )
-    )
-
-
-    # ========================================================
-    # FINAL RESULT
-    # ========================================================
+    # --------------------------------------------------------
+    # FINAL ANALYTICS RESULT
+    # --------------------------------------------------------
 
     return {
+        "total_bugs": len(filtered_records),
 
-        "total_bugs":
-            len(
-                filtered_records
-            ),
+        "historical_bugs": sum(
+            1 for record in filtered_records
+            if record.get("record_type") == "Historical"
+        ),
 
+        "submitted_bugs": sum(
+            1 for record in filtered_records
+            if record.get("record_type") == "Submitted"
+        ),
 
-        "historical_bugs":
-            sum(
+        "most_affected_component": get_most_common(
+            component_frequency
+        ),
 
-                1
+        "most_common_exception": get_most_common(
+            exception_frequency
+        ),
 
-                for r
-                in filtered_records
-
-                if r.get(
-                    "record_type"
-                )
-                == "Historical"
-
-            ),
-
-
-        "submitted_bugs":
-            sum(
-
-                1
-
-                for r
-                in filtered_records
-
-                if r.get(
-                    "record_type"
-                )
-                == "Submitted"
-
-            ),
-
-
-        "most_affected_component":
-            get_most_common(
-                component_frequency
-            ),
-
-
-        "most_common_exception":
-            get_most_common(
-                exception_frequency
-            ),
-
-
-        "component_frequency":
-            component_frequency,
-
-
-        "exception_frequency":
-            exception_frequency,
-
-
-        "severity_frequency":
-            severity_frequency,
-
-
-        "priority_frequency":
-            priority_frequency,
-
-
-        "duplicate_status_frequency":
-            duplicate_status_frequency,
-
-
-        "root_cause_frequency":
-            root_cause_frequency,
-
-
-        "resolution_frequency":
-            resolution_frequency,
-
-
-        "recurring_patterns":
-            recurring_patterns,
-
-
-        "semantic_clusters":
-            semantic_clusters,
-
-
-        "time_analysis":
-            dict(
-                sorted(
-                    time_analysis.items()
-                )
-            ),
-
+        "component_frequency": component_frequency,
+        "exception_frequency": exception_frequency,
+        "severity_frequency": severity_frequency,
+        "priority_frequency": priority_frequency,
+        "duplicate_status_frequency": duplicate_status_frequency,
+        "root_cause_frequency": root_cause_frequency,
+        "resolution_frequency": resolution_frequency,
+        "recurring_patterns": recurring_patterns,
+        "semantic_clusters": semantic_clusters,
+        "time_analysis": dict(sorted(time_analysis.items())),
 
         "available_filters": {
-
-            "components":
-                available_components,
-
-            "severities":
-                available_severities,
-
-            "priorities":
-                available_priorities,
-
-            "exception_types":
-                available_exceptions
+            "components": available_components,
+            "severities": available_severities,
+            "priorities": available_priorities,
+            "exception_types": available_exceptions
         }
     }
