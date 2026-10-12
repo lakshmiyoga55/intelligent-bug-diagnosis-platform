@@ -4,4 +4,4 @@ Flask-Cors==6.0.5
 python-dotenv==1.2.4
 openai==3.24.0
 numpy
-sentence-transformers==6.1.0
+
