@@ -110,6 +110,7 @@ Run the tests and checks available in the project before using the platform. Ver
 
 Developed as part of the Infosys Springboard Virtual Internship project.
 
+
 ## License
 
-The license for this project should be specified in the repository's `LICENSE` file.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
