@@ -1,7 +1,10 @@
+
 import React, { useEffect, useState } from "react";
 import "./App.css";
 
-const BACKEND_URL = "http://127.0.0.1:5000";
+// Render live backend URL
+const BACKEND_URL =
+  "https://intelligent-bug-diagnosis-platform-2bgk.onrender.com";
 
 function App() {
   const [page, setPage] = useState("home");
@@ -20,13 +23,8 @@ function App() {
     );
   }, [darkMode]);
 
-  const goToSubmit = () => {
-    setPage("submit");
-  };
-
-  const goHome = () => {
-    setPage("home");
-  };
+  const goToSubmit = () => setPage("submit");
+  const goHome = () => setPage("home");
 
   const handleDiagnosisResult = (result) => {
     setDiagnosisResult(result);
@@ -35,8 +33,6 @@ function App() {
 
   return (
     <div className={`app ${darkMode ? "dark-theme" : "light-theme"}`}>
-      {/* ================= NAVBAR ================= */}
-
       <nav className="navbar">
         <div className="nav-logo" onClick={goHome}>
           Intelligent Bug Diagnosis Platform
@@ -44,41 +40,23 @@ function App() {
 
         <div className="nav-links">
           <button onClick={goHome}>Home</button>
-
-          <button onClick={() => setPage("features")}>
-            Features
-          </button>
-
-          <button onClick={() => setPage("about")}>
-            About
-          </button>
-
-          <button onClick={() => setPage("analytics")}>
-            Analytics
-          </button>
+          <button onClick={() => setPage("features")}>Features</button>
+          <button onClick={() => setPage("about")}>About</button>
+          <button onClick={() => setPage("analytics")}>Analytics</button>
 
           <button
             className="theme-toggle"
             onClick={() => setDarkMode((previous) => !previous)}
-            title={
-              darkMode
-                ? "Switch to Light Mode"
-                : "Switch to Dark Mode"
-            }
+            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {darkMode ? "☀️ Light" : "🌙 Dark"}
           </button>
 
-          <button
-            className="nav-submit"
-            onClick={goToSubmit}
-          >
+          <button className="nav-submit" onClick={goToSubmit}>
             Submit Bug
           </button>
         </div>
       </nav>
-
-      {/* ================= PAGES ================= */}
 
       {page === "home" && (
         <HomePage
@@ -88,9 +66,7 @@ function App() {
       )}
 
       {page === "features" && <FeaturesPage />}
-
       {page === "about" && <AboutPage />}
-
       {page === "analytics" && <AnalyticsPage />}
 
       {page === "submit" && (
@@ -112,10 +88,7 @@ function App() {
   );
 }
 
-
-/* =================================================
-   HOME PAGE
-================================================= */
+/* HOME PAGE */
 
 function HomePage({ onSubmit, onFeatures }) {
   return (
@@ -138,17 +111,11 @@ function HomePage({ onSubmit, onFeatures }) {
           </p>
 
           <div className="hero-buttons">
-            <button
-              className="primary-btn"
-              onClick={onSubmit}
-            >
+            <button className="primary-btn" onClick={onSubmit}>
               Submit a Bug →
             </button>
 
-            <button
-              className="secondary-btn"
-              onClick={onFeatures}
-            >
+            <button className="secondary-btn" onClick={onFeatures}>
               Explore Features
             </button>
           </div>
@@ -157,118 +124,72 @@ function HomePage({ onSubmit, onFeatures }) {
 
       <section className="home-section">
         <h2>How It Works</h2>
-
         <p className="section-subtitle">
           From bug submission to actionable fix recommendations.
         </p>
 
         <div className="workflow-grid">
-          <WorkflowCard
-            number="01"
-            title="Bug Submission"
-            description="Submit bug descriptions, stack traces, error logs and bug reports."
-          />
-
-          <WorkflowCard
-            number="02"
-            title="Triage Agent"
-            description="Classifies severity, priority and affected software component."
-          />
-
-          <WorkflowCard
-            number="03"
-            title="Log Analysis"
-            description="Extracts exception type, error message and failure point."
-          />
-
-          <WorkflowCard
-            number="04"
-            title="Root Cause"
-            description="Uses historical evidence to identify the probable root cause."
-          />
-
-          <WorkflowCard
-            number="05"
-            title="Duplicate Detection"
-            description="Finds similar historical bugs and determines duplicate status."
-          />
-
-          <WorkflowCard
-            number="06"
-            title="Remediation"
-            description="Provides actionable recommendations using historical resolutions."
-          />
+          <WorkflowCard number="01" title="Bug Submission"
+            description="Submit bug descriptions, stack traces, error logs and bug reports." />
+          <WorkflowCard number="02" title="Triage Agent"
+            description="Classifies severity, priority and affected software component." />
+          <WorkflowCard number="03" title="Log Analysis"
+            description="Extracts exception type, error message and failure point." />
+          <WorkflowCard number="04" title="Root Cause"
+            description="Uses historical evidence to identify the probable root cause." />
+          <WorkflowCard number="05" title="Duplicate Detection"
+            description="Finds similar historical bugs and determines duplicate status." />
+          <WorkflowCard number="06" title="Remediation"
+            description="Provides actionable recommendations using historical resolutions." />
         </div>
       </section>
     </>
   );
 }
 
-
-/* =================================================
-   WORKFLOW CARD
-================================================= */
-
-function WorkflowCard({
-  number,
-  title,
-  description
-}) {
+function WorkflowCard({ number, title, description }) {
   return (
     <div className="workflow-card">
-      <div className="workflow-number">
-        {number}
-      </div>
-
+      <div className="workflow-number">{number}</div>
       <h3>{title}</h3>
-
       <p>{description}</p>
     </div>
   );
 }
 
-
-/* =================================================
-   FEATURES PAGE
-================================================= */
+/* FEATURES PAGE */
 
 function FeaturesPage() {
   const features = [
     {
       icon: "🐞",
       title: "Bug Submission",
-      description:
-        "Submit bug descriptions, stack traces, error logs and supported bug report files."
+      description: "Submit bug descriptions, stack traces, error logs and supported bug report files."
     },
     {
       icon: "🎯",
       title: "Triage Agent",
-      description:
-        "Automatically determine severity, priority and affected component."
+      description: "Automatically determine severity, priority and affected component."
     },
     {
       icon: "📋",
       title: "Log Analysis",
-      description:
-        "Extract exception details, failure points and affected code paths."
+      description: "Extract exception details, failure points and affected code paths."
     },
     {
       icon: "🔍",
       title: "Root Cause Analysis",
-      description:
-        "Use historical defect evidence to identify probable root causes."
+      description: "Use historical defect evidence to identify probable root causes."
     },
     {
       icon: "🔄",
       title: "Duplicate Detection",
-      description:
-        "Compare the current bug against historical defects."
+      description: "Compare the current bug against historical defects."
     },
     {
       icon: "🛠️",
       title: "Remediation",
-      description:
-        "Generate actionable fix recommendations using historical resolutions."
+      description: "Generate actionable fix recommendations using historical resolutions."
     }
   ];
 
@@ -276,25 +197,14 @@ function FeaturesPage() {
     <div className="page-container">
       <div className="page-header">
         <h1>Platform Features</h1>
-
-        <p>
-          A multi-agent workflow for structured
-          software defect diagnosis.
-        </p>
+        <p>A multi-agent workflow for structured software defect diagnosis.</p>
       </div>
 
       <div className="features-grid">
         {features.map((feature, index) => (
-          <div
-            className="feature-card"
-            key={index}
-          >
-            <div className="feature-icon">
-              {feature.icon}
-            </div>
-
+          <div className="feature-card" key={index}>
+            <div className="feature-icon">{feature.icon}</div>
             <h3>{feature.title}</h3>
-
             <p>{feature.description}</p>
           </div>
         ))}
@@ -303,44 +213,34 @@ function FeaturesPage() {
   );
 }
 
-
-/* =================================================
-   ABOUT PAGE
-================================================= */
+/* ABOUT PAGE */
 
 function AboutPage() {
   return (
     <div className="page-container">
       <div className="page-header">
         <h1>About the Platform</h1>
-
         <p>
-          Intelligent software defect diagnosis using
-          a multi-agent architecture.
+          Intelligent software defect diagnosis using a multi-agent architecture.
         </p>
       </div>
 
       <div className="about-card">
-        <h2>
-          Intelligent Bug Diagnosis Platform
-        </h2>
+        <h2>Intelligent Bug Diagnosis Platform</h2>
 
         <p>
-          This platform analyzes software defects through
-          multiple specialized agents. Each agent performs
-          a specific diagnosis task and passes structured
-          information to the next stage.
+          This platform analyzes software defects through multiple specialized
+          agents. Each agent performs a specific diagnosis task and passes
+          structured information to the next stage.
         </p>
 
         <p>
-          Historical defect information is used to identify
-          similar bugs, probable root causes and previously
-          used resolutions.
+          Historical defect information is used to identify similar bugs,
+          probable root causes and previously used resolutions.
         </p>
 
         <div className="architecture-box">
           <h3>Architecture Flow</h3>
-
           <div className="architecture-flow">
             <span>Bug Submission</span>
             <span>→</span>
@@ -360,15 +260,9 @@ function AboutPage() {
   );
 }
 
+/* BUG SUBMISSION PAGE */
 
-/* =================================================
-   BUG SUBMISSION PAGE
-================================================= */
-
-function BugSubmissionPage({
-  onBack,
-  onResult
-}) {
+function BugSubmissionPage({ onBack, onResult }) {
   const [formData, setFormData] = useState({
     bug_title: "",
     programming_language: "Java",
@@ -382,10 +276,7 @@ function BugSubmissionPage({
   const [error, setError] = useState("");
 
   const handleChange = (event) => {
-    const {
-      name,
-      value
-    } = event.target;
+    const { name, value } = event.target;
 
     setFormData((previous) => ({
       ...previous,
@@ -396,9 +287,7 @@ function BugSubmissionPage({
   const handleFileChange = (event) => {
     const file = event.target.files[0];
 
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     setSelectedFile(file);
 
@@ -416,9 +305,7 @@ function BugSubmissionPage({
           ...previous,
           stack_trace: content
         }));
-      } else if (
-        fileName.endsWith(".log")
-      ) {
+      } else if (fileName.endsWith(".log")) {
         setFormData((previous) => ({
           ...previous,
           error_logs: content
@@ -436,7 +323,6 @@ function BugSubmissionPage({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setError("");
 
     if (!formData.bug_title.trim()) {
@@ -452,72 +338,47 @@ function BugSubmissionPage({
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${BACKEND_URL}/api/diagnose`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(formData)
-        }
-      );
+      const response = await fetch(`${BACKEND_URL}/api/diagnose`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
 
       if (!response.ok) {
-        let message =
-          `Server error: ${response.status}`;
+        let message = `Server error: ${response.status}`;
 
         try {
-          const errorData =
-            await response.json();
-
-          if (errorData.error) {
-            message = errorData.error;
-          }
-
-          if (errorData.message) {
-            message = errorData.message;
-          }
+          const errorData = await response.json();
+          if (errorData.error) message = errorData.error;
+          if (errorData.message) message = errorData.message;
         } catch {
-          // Ignore JSON parsing error
+          // Ignore JSON parsing errors.
         }
 
         throw new Error(message);
       }
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (data.success === false) {
         throw new Error(
-          data.message ||
-          data.error ||
-          "Diagnosis failed."
+          data.message || data.error || "Diagnosis failed."
         );
       }
 
       onResult(data);
-
     } catch (err) {
-      console.error(
-        "Diagnosis request failed:",
-        err
-      );
+      console.error("Diagnosis request failed:", err);
 
-      if (
-        err instanceof TypeError &&
-        err.message === "Failed to fetch"
-      ) {
+      if (err instanceof TypeError && err.message === "Failed to fetch") {
         setError(
-          "Cannot connect to the backend. Please make sure Flask is running at http://127.0.0.1:5000"
+          "Cannot connect to the backend. Please check the Render service and its CORS settings."
         );
       } else {
-        setError(
-          err.message ||
-          "Unable to process the diagnosis."
-        );
+        setError(err.message || "Unable to process the diagnosis.");
       }
-
     } finally {
       setLoading(false);
     }
@@ -527,43 +388,30 @@ function BugSubmissionPage({
     <div className="bug-page">
       <div className="bug-container">
         <div className="bug-header">
-          <h1>
-            Submit a Bug for Diagnosis
-          </h1>
-
+          <h1>Submit a Bug for Diagnosis</h1>
           <p>
-            Provide the bug details below to run the
-            complete multi-agent diagnosis workflow.
+            Provide the bug details below to run the complete multi-agent
+            diagnosis workflow.
           </p>
         </div>
 
-        <form
-          className="bug-form"
-          onSubmit={handleSubmit}
-        >
-          {error && (
-            <div className="form-error">
-              ❌ {error}
-            </div>
-          )}
+        <form className="bug-form" onSubmit={handleSubmit}>
+          {error && <div className="form-error">❌ {error}</div>}
 
           <div className="form-group">
             <label>Bug Title *</label>
-
             <input
               type="text"
               name="bug_title"
               value={formData.bug_title}
               onChange={handleChange}
               placeholder="Enter bug title"
+              required
             />
           </div>
 
           <div className="form-group">
-            <label>
-              Programming Language *
-            </label>
-
+            <label>Programming Language *</label>
             <select
               name="programming_language"
               value={formData.programming_language}
@@ -578,15 +426,10 @@ function BugSubmissionPage({
           </div>
 
           <div className="form-group">
-            <label>
-              Upload Bug Report / Error Log
-            </label>
+            <label>Upload Bug Report / Error Log</label>
 
             <div className="file-upload-box">
-              <label
-                className="file-upload-label"
-                htmlFor="bug-file"
-              >
+              <label className="file-upload-label" htmlFor="bug-file">
                 📁 Choose Bug / Log File
               </label>
 
@@ -597,10 +440,7 @@ function BugSubmissionPage({
                 onChange={handleFileChange}
               />
 
-              <p>
-                Supported files:
-                .txt, .log, .stacktrace, .trace
-              </p>
+              <p>Supported files: .txt, .log, .stacktrace, .trace</p>
 
               {selectedFile && (
                 <div className="upload-success">
@@ -612,18 +452,17 @@ function BugSubmissionPage({
 
           <div className="form-group">
             <label>Bug Description *</label>
-
             <textarea
               name="bug_description"
               value={formData.bug_description}
               onChange={handleChange}
               placeholder="Describe the bug..."
+              required
             />
           </div>
 
           <div className="form-group">
             <label>Stack Trace</label>
-
             <textarea
               name="stack_trace"
               value={formData.stack_trace}
@@ -634,7 +473,6 @@ function BugSubmissionPage({
 
           <div className="form-group">
             <label>Error Logs</label>
-
             <textarea
               name="error_logs"
               value={formData.error_logs}
@@ -658,9 +496,7 @@ function BugSubmissionPage({
               className="submit-btn"
               disabled={loading}
             >
-              {loading
-                ? "Analyzing..."
-                : "Submit Bug →"}
+              {loading ? "Analyzing..." : "Submit Bug →"}
             </button>
           </div>
         </form>
@@ -669,31 +505,17 @@ function BugSubmissionPage({
   );
 }
 
+/* DIAGNOSIS RESULT */
 
-/* =================================================
-   DIAGNOSIS RESULT
-================================================= */
-
-function DiagnosisResult({
-  result,
-  onBack
-}) {
+function DiagnosisResult({ result, onBack }) {
   if (!result) {
     return (
       <div className="result-page">
         <div className="result-container">
           <div className="result-empty">
             <h2>No Diagnosis Result</h2>
-
-            <p>
-              Please submit a bug to generate
-              the diagnosis report.
-            </p>
-
-            <button
-              className="submit-btn"
-              onClick={onBack}
-            >
+            <p>Please submit a bug to generate the diagnosis report.</p>
+            <button className="submit-btn" onClick={onBack}>
               Submit a Bug
             </button>
           </div>
@@ -702,169 +524,89 @@ function DiagnosisResult({
     );
   }
 
-  const report =
-    result.diagnosis_report ||
-    result;
-
-  const bug =
-    report.bug ||
-    result.bug ||
-    {};
-
+  const report = result.diagnosis_report || result;
+  const bug = report.bug || result.bug || {};
   const triage =
-    report.triage ||
-    result.triage_analysis ||
-    result.triage ||
-    {};
-
-  const log =
-    report.log_analysis ||
-    result.log_analysis ||
-    {};
-
+    report.triage || result.triage_analysis || result.triage || {};
+  const log = report.log_analysis || result.log_analysis || {};
   const rootCause =
     report.root_cause ||
     result.root_cause_analysis ||
     result.root_cause ||
     {};
-
-  const duplicate =
-    report.duplicate_detection ||
-    result.duplicate_detection ||
-    {};
-
-  const remediation =
-    report.remediation ||
-    result.remediation ||
-    {};
+  const duplicate = report.duplicate_detection || result.duplicate_detection || {};
+  const remediation = report.remediation || result.remediation || {};
 
   return (
     <div className="result-page">
       <div className="result-container">
-
         <div className="result-header">
           <div>
-            <span className="result-badge">
-              AI DIAGNOSIS REPORT
-            </span>
-
+            <span className="result-badge">AI DIAGNOSIS REPORT</span>
             <h1>Bug Diagnosis Result</h1>
-
             <p>
-              Structured analysis generated by
-              the multi-agent diagnosis pipeline.
+              Structured analysis generated by the multi-agent diagnosis pipeline.
             </p>
           </div>
 
-          <button
-            className="back-btn"
-            onClick={onBack}
-          >
+          <button className="back-btn" onClick={onBack}>
             ← Submit Another Bug
           </button>
         </div>
 
-
-        {/* BUG */}
-
         <section className="result-section">
           <div className="result-section-title">
-            <span className="section-icon">
-              🐞
-            </span>
-
+            <span className="section-icon">🐞</span>
             <div>
               <h2>Bug Details</h2>
-
-              <p>
-                Original submitted bug information
-              </p>
+              <p>Original submitted bug information</p>
             </div>
           </div>
 
           <div className="result-grid">
-            <div className="result-item">
-              <span>Bug Title</span>
-
-              <strong>
-                {bug.bug_title || "Not provided"}
-              </strong>
-            </div>
-
-            <div className="result-item">
-              <span>Programming Language</span>
-
-              <strong>
-                {bug.programming_language || "Unknown"}
-              </strong>
-            </div>
-
-            <div className="result-item result-wide">
-              <span>Description</span>
-
-              <p>
-                {bug.description ||
-                  bug.bug_description ||
-                  "No description"}
-              </p>
-            </div>
+            <ResultItem label="Bug Title" value={bug.bug_title || "Not provided"} />
+            <ResultItem
+              label="Programming Language"
+              value={bug.programming_language}
+            />
+            <ResultItem
+              label="Description"
+              value={bug.description || bug.bug_description || "No description"}
+              wide
+            />
           </div>
         </section>
 
-
-        {/* TRIAGE */}
-
         <section className="result-section">
           <div className="result-section-title">
-            <span className="section-icon">
-              🎯
-            </span>
-
+            <span className="section-icon">🎯</span>
             <div>
               <h2>Triage Analysis</h2>
-
-              <p>
-                Severity, priority and component
-              </p>
+              <p>Severity, priority and component</p>
             </div>
           </div>
 
           <div className="analysis-cards">
             <div className="analysis-card">
-              <span className="analysis-label">
-                Severity
-              </span>
-
+              <span className="analysis-label">Severity</span>
               <strong className="analysis-value severity-value">
                 {triage.severity || "Unknown"}
               </strong>
             </div>
-
             <div className="analysis-card">
-              <span className="analysis-label">
-                Priority
-              </span>
-
+              <span className="analysis-label">Priority</span>
               <strong className="analysis-value">
                 {triage.priority || "Unknown"}
               </strong>
             </div>
-
             <div className="analysis-card">
-              <span className="analysis-label">
-                Component
-              </span>
-
+              <span className="analysis-label">Component</span>
               <strong className="analysis-value">
                 {triage.affected_component || "Unknown"}
               </strong>
             </div>
-
             <div className="analysis-card">
-              <span className="analysis-label">
-                Confidence
-              </span>
-
+              <span className="analysis-label">Confidence</span>
               <strong className="analysis-value confidence-value">
                 {formatConfidence(triage.confidence)}
               </strong>
@@ -874,67 +616,28 @@ function DiagnosisResult({
           {triage.reasoning && (
             <div className="reasoning-box">
               <h3>🧠 Reasoning</h3>
-
               <p>{triage.reasoning}</p>
             </div>
           )}
         </section>
 
-
-        {/* LOG ANALYSIS */}
-
         <section className="result-section">
           <div className="result-section-title">
-            <span className="section-icon">
-              📋
-            </span>
-
+            <span className="section-icon">📋</span>
             <div>
               <h2>Log Analysis</h2>
-
-              <p>
-                Exception and stack trace analysis
-              </p>
+              <p>Exception and stack trace analysis</p>
             </div>
           </div>
 
           <div className="result-grid">
-            <ResultItem
-              label="Exception Type"
-              value={log.exception_type}
-            />
-
-            <ResultItem
-              label="Error Message"
-              value={log.error_message}
-            />
-
-            <ResultItem
-              label="File"
-              value={log.file}
-            />
-
-            <ResultItem
-              label="Class"
-              value={log.class}
-            />
-
-            <ResultItem
-              label="Method"
-              value={log.method}
-            />
-
-            <ResultItem
-              label="Line"
-              value={log.line}
-            />
-
-            <ResultItem
-              label="Failure Point"
-              value={log.failure_point}
-              wide
-            />
-
+            <ResultItem label="Exception Type" value={log.exception_type} />
+            <ResultItem label="Error Message" value={log.error_message} />
+            <ResultItem label="File" value={log.file} />
+            <ResultItem label="Class" value={log.class} />
+            <ResultItem label="Method" value={log.method} />
+            <ResultItem label="Line" value={log.line} />
+            <ResultItem label="Failure Point" value={log.failure_point} wide />
             <ResultItem
               label="Affected Code Path"
               value={log.affected_code_path}
@@ -943,27 +646,17 @@ function DiagnosisResult({
           </div>
         </section>
 
-
-        {/* ROOT CAUSE */}
-
         <section className="result-section">
           <div className="result-section-title">
-            <span className="section-icon">
-              🔍
-            </span>
-
+            <span className="section-icon">🔍</span>
             <div>
               <h2>Root Cause Analysis</h2>
-
-              <p>
-                Probable root cause from available evidence
-              </p>
+              <p>Probable root cause from available evidence</p>
             </div>
           </div>
 
           <div className="result-highlight">
             <span>Probable Root Cause</span>
-
             <h3>
               {rootCause.root_cause ||
                 rootCause.conclusion ||
@@ -974,147 +667,81 @@ function DiagnosisResult({
           {rootCause.reasoning && (
             <div className="reasoning-box">
               <h3>🧠 Reasoning</h3>
-
               <p>{rootCause.reasoning}</p>
             </div>
           )}
         </section>
 
-
-        {/* DUPLICATE */}
-
         <section className="result-section">
           <div className="result-section-title">
-            <span className="section-icon">
-              🔄
-            </span>
-
+            <span className="section-icon">🔄</span>
             <div>
               <h2>Duplicate Detection</h2>
-
-              <p>
-                Historical defect similarity analysis
-              </p>
+              <p>Historical defect similarity analysis</p>
             </div>
           </div>
 
           <div className="duplicate-summary">
             <span>Status</span>
-
             <div className="duplicate-status">
               {duplicate.status || "New"}
             </div>
           </div>
 
-          {duplicate.matches &&
-            duplicate.matches.length > 0 && (
-              <div className="evidence-box">
-                <h3>
-                  Matching Historical Bugs
-                </h3>
+          {Array.isArray(duplicate.matches) && duplicate.matches.length > 0 && (
+            <div className="evidence-box">
+              <h3>Matching Historical Bugs</h3>
 
-                {duplicate.matches.map(
-                  (match, index) => (
-                    <div
-                      className="evidence-item"
-                      key={index}
-                    >
-                      <div>
-                        <span>Bug ID</span>
-
-                        <strong>
-                          {match.bug_id}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>Status</span>
-
-                        <strong>
-                          {match.status}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>Similarity</span>
-
-                        <strong>
-                          {formatSimilarity(
-                            match.similarity_score
-                          )}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>Resolution</span>
-
-                        <p>
-                          {match.resolution ||
-                            "No resolution"}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            )}
+              {duplicate.matches.map((match, index) => (
+                <div className="evidence-item" key={index}>
+                  <div>
+                    <span>Bug ID</span>
+                    <strong>{match.bug_id || "Unknown"}</strong>
+                  </div>
+                  <div>
+                    <span>Status</span>
+                    <strong>{match.status || "Unknown"}</strong>
+                  </div>
+                  <div>
+                    <span>Similarity</span>
+                    <strong>{formatSimilarity(match.similarity_score)}</strong>
+                  </div>
+                  <div>
+                    <span>Resolution</span>
+                    <p>{match.resolution || "No resolution"}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
-
-
-        {/* REMEDIATION */}
 
         <section className="result-section">
           <div className="result-section-title">
-            <span className="section-icon">
-              🛠️
-            </span>
-
+            <span className="section-icon">🛠️</span>
             <div>
-              <h2>
-                Remediation Recommendation
-              </h2>
-
-              <p>
-                Recommended corrective action
-              </p>
+              <h2>Remediation Recommendation</h2>
+              <p>Recommended corrective action</p>
             </div>
           </div>
 
           <div className="fix-box">
             <span>Recommended Fix</span>
-
-            <p>
-              {remediation.recommended_fix ||
-                "Insufficient Evidence"}
-            </p>
+            <p>{remediation.recommended_fix || "Insufficient Evidence"}</p>
           </div>
 
           <div className="confidence-box">
             <span>Confidence</span>
-
-            <strong>
-              {formatConfidence(
-                remediation.confidence
-              )}
-            </strong>
+            <strong>{formatConfidence(remediation.confidence)}</strong>
           </div>
         </section>
 
-
-        {/* PIPELINE */}
-
         <section className="result-section">
           <div className="result-section-title">
-            <span className="section-icon">
-              ⚙️
-            </span>
-
+            <span className="section-icon">⚙️</span>
             <div>
               <h2>Diagnosis Pipeline</h2>
-
-              <p>
-                Multi-agent processing workflow
-              </p>
+              <p>Multi-agent processing workflow</p>
             </div>
           </div>
 
@@ -1130,115 +757,56 @@ function DiagnosisResult({
             ].map((step, index, array) => (
               <React.Fragment key={step}>
                 <div className="pipeline-step">
-                  <div className="pipeline-number">
-                    {index + 1}
-                  </div>
-
+                  <div className="pipeline-number">{index + 1}</div>
                   <span>{step}</span>
                 </div>
-
                 {index < array.length - 1 && (
-                  <div className="pipeline-arrow">
-                    →
-                  </div>
+                  <div className="pipeline-arrow">→</div>
                 )}
               </React.Fragment>
             ))}
           </div>
         </section>
-
       </div>
     </div>
   );
 }
 
-
-/* =================================================
-   RESULT ITEM
-================================================= */
-
-function ResultItem({
-  label,
-  value,
-  wide = false
-}) {
+function ResultItem({ label, value, wide = false }) {
   return (
-    <div
-      className={
-        wide
-          ? "result-item result-wide"
-          : "result-item"
-      }
-    >
+    <div className={wide ? "result-item result-wide" : "result-item"}>
       <span>{label}</span>
-
-      <strong>
-        {value || "Unknown"}
-      </strong>
+      <strong>{value ?? "Unknown"}</strong>
     </div>
   );
 }
 
-
-/* =================================================
-   CONFIDENCE
-================================================= */
-
 function formatConfidence(value) {
-  if (
-    value === undefined ||
-    value === null ||
-    value === ""
-  ) {
-    return "N/A";
-  }
+  if (value === undefined || value === null || value === "") return "N/A";
 
   const number = Number(value);
+  if (!Number.isFinite(number)) return "N/A";
 
-  if (number <= 1) {
-    return `${Math.round(number * 100)}%`;
-  }
-
+  if (number <= 1) return `${Math.round(number * 100)}%`;
   return `${Math.round(number)}%`;
 }
-
-
-/* =================================================
-   SIMILARITY
-================================================= */
 
 function formatSimilarity(value) {
-  if (
-    value === undefined ||
-    value === null ||
-    value === ""
-  ) {
-    return "N/A";
-  }
+  if (value === undefined || value === null || value === "") return "N/A";
 
   const number = Number(value);
+  if (!Number.isFinite(number)) return "N/A";
 
-  if (number <= 1) {
-    return `${Math.round(number * 100)}%`;
-  }
-
+  if (number <= 1) return `${Math.round(number * 100)}%`;
   return `${Math.round(number)}%`;
 }
 
-
-/* =================================================
-   ANALYTICS PAGE
-================================================= */
+/* ANALYTICS PAGE */
 
 function AnalyticsPage() {
-  const [analytics, setAnalytics] =
-    useState(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [filters, setFilters] = useState({
     component: "",
@@ -1249,78 +817,56 @@ function AnalyticsPage() {
     end_date: ""
   });
 
-  const loadAnalytics = async (
-    currentFilters = filters
-  ) => {
+  const loadAnalytics = async (currentFilters = filters) => {
     setLoading(true);
     setError("");
 
     try {
-      const params =
-        new URLSearchParams();
+      const params = new URLSearchParams();
 
-      Object.entries(currentFilters).forEach(
-        ([key, value]) => {
-          if (value) {
-            params.set(key, value);
-          }
-        }
-      );
+      Object.entries(currentFilters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+      });
 
-      const query =
-        params.toString();
-
+      const query = params.toString();
       const url = query
         ? `${BACKEND_URL}/api/analytics?${query}`
         : `${BACKEND_URL}/api/analytics`;
 
-      const response =
-        await fetch(url);
+      const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(
-          "Analytics request failed"
-        );
+        throw new Error(`Analytics request failed: ${response.status}`);
       }
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
-      console.log(
-        "Analytics API Response:",
-        data
-      );
+      console.log("Analytics API Response:", data);
 
-      setAnalytics(
-        data.analytics || {}
-      );
+      if (data.success === false) {
+        throw new Error(data.message || "Analytics request failed.");
+      }
 
-    } catch (error) {
-      console.error(
-        "Analytics error:",
-        error
-      );
-
+      // The backend returns the analytics object inside data.analytics.
+      setAnalytics(data.analytics || data);
+    } catch (err) {
+      console.error("Analytics error:", err);
       setError(
-        "Unable to load analytics data."
+        "Unable to load analytics data. Please retry or check the browser console."
       );
-
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadAnalytics();
+    loadAnalytics({});
+    // Load initial analytics once when this page mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleFilterChange = (
-    event
-  ) => {
-    const {
-      name,
-      value
-    } = event.target;
+  const handleFilterChange = (event) => {
+    const { name, value } = event.target;
 
     setFilters((previous) => ({
       ...previous,
@@ -1328,9 +874,7 @@ function AnalyticsPage() {
     }));
   };
 
-  const applyFilters = () => {
-    loadAnalytics(filters);
-  };
+  const applyFilters = () => loadAnalytics(filters);
 
   const clearFilters = () => {
     const emptyFilters = {
@@ -1351,10 +895,7 @@ function AnalyticsPage() {
       <div className="page-container">
         <div className="page-header">
           <h1>Analytics</h1>
-
-          <p>
-            Loading analytics...
-          </p>
+          <p>Loading analytics...</p>
         </div>
       </div>
     );
@@ -1365,8 +906,13 @@ function AnalyticsPage() {
       <div className="page-container">
         <div className="page-header">
           <h1>Analytics</h1>
-
           <p>{error}</p>
+          <button
+            className="submit-btn"
+            onClick={() => loadAnalytics({})}
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -1376,132 +922,89 @@ function AnalyticsPage() {
     <div className="page-container">
       <div className="page-header">
         <h1>Bug Analytics</h1>
-
         <p>
-          Analyze recurring defect patterns,
-          severity and resolution trends.
+          Analyze recurring defect patterns, severity and resolution trends.
         </p>
       </div>
-
-
-      {/* FILTERS */}
 
       <div className="analytics-section analytics-filter-section">
         <h2>Analytics Filters</h2>
 
         <div className="analytics-filter-grid">
-
           <div className="form-group">
             <label>Component</label>
-
             <select
               name="component"
               value={filters.component}
               onChange={handleFilterChange}
             >
-              <option value="">
-                All Components
-              </option>
-
-              {(
-                analytics?.available_filters
-                  ?.components || []
-              ).map((component) => (
-                <option
-                  key={component}
-                  value={component}
-                >
-                  {component}
-                </option>
-              ))}
+              <option value="">All Components</option>
+              {(analytics?.available_filters?.components || []).map(
+                (component) => (
+                  <option key={component} value={component}>
+                    {component}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
-
           <div className="form-group">
             <label>Severity</label>
-
             <select
               name="severity"
               value={filters.severity}
               onChange={handleFilterChange}
             >
-              <option value="">
-                All Severities
-              </option>
-
-              {(
-                analytics?.available_filters
-                  ?.severities || []
-              ).map((severity) => (
-                <option
-                  key={severity}
-                  value={severity}
-                >
-                  {severity}
-                </option>
-              ))}
+              <option value="">All Severities</option>
+              {(analytics?.available_filters?.severities || []).map(
+                (severity) => (
+                  <option key={severity} value={severity}>
+                    {severity}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
-
           <div className="form-group">
             <label>Priority</label>
-
             <select
               name="priority"
               value={filters.priority}
               onChange={handleFilterChange}
             >
-              <option value="">
-                All Priorities
-              </option>
-
-              {(
-                analytics?.available_filters
-                  ?.priorities || []
-              ).map((priority) => (
-                <option
-                  key={priority}
-                  value={priority}
-                >
-                  {priority}
-                </option>
-              ))}
+              <option value="">All Priorities</option>
+              {(analytics?.available_filters?.priorities || []).map(
+                (priority) => (
+                  <option key={priority} value={priority}>
+                    {priority}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
-
           <div className="form-group">
             <label>Exception Type</label>
-
             <select
               name="exception_type"
               value={filters.exception_type}
               onChange={handleFilterChange}
             >
-              <option value="">
-                All Exception Types
-              </option>
-
-              {(
-                analytics?.available_filters
-                  ?.exception_types || []
-              ).map((exceptionType) => (
-                <option
-                  key={exceptionType}
-                  value={exceptionType}
-                >
-                  {exceptionType}
-                </option>
-              ))}
+              <option value="">All Exception Types</option>
+              {(analytics?.available_filters?.exception_types || []).map(
+                (exceptionType) => (
+                  <option key={exceptionType} value={exceptionType}>
+                    {exceptionType}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
-
           <div className="form-group">
             <label>Start Date</label>
-
             <input
               type="date"
               name="start_date"
@@ -1510,10 +1013,8 @@ function AnalyticsPage() {
             />
           </div>
 
-
           <div className="form-group">
             <label>End Date</label>
-
             <input
               type="date"
               name="end_date"
@@ -1521,180 +1022,112 @@ function AnalyticsPage() {
               onChange={handleFilterChange}
             />
           </div>
-
         </div>
 
-
         <div className="analytics-filter-actions">
-          <button
-            className="submit-btn"
-            onClick={applyFilters}
-          >
+          <button className="submit-btn" onClick={applyFilters}>
             Apply Filters
           </button>
-
-          <button
-            className="back-btn"
-            onClick={clearFilters}
-          >
+          <button className="back-btn" onClick={clearFilters}>
             Clear Filters
           </button>
         </div>
       </div>
 
-
-      {/* SUMMARY */}
-
       {analytics && (
         <>
           <div className="analytics-summary">
-            <AnalyticsCard
-              title="Total Bugs"
-              value={analytics.total_bugs || 0}
-            />
-
+            <AnalyticsCard title="Total Bugs" value={analytics.total_bugs ?? 0} />
             <AnalyticsCard
               title="Historical Bugs"
-              value={analytics.historical_bugs || 0}
+              value={analytics.historical_bugs ?? 0}
             />
-
             <AnalyticsCard
               title="Submitted Bugs"
-              value={analytics.submitted_bugs || 0}
+              value={analytics.submitted_bugs ?? 0}
             />
-
             <AnalyticsCard
               title="Affected Component"
               value={
-                Array.isArray(
-                  analytics.most_affected_component
-                )
+                Array.isArray(analytics.most_affected_component)
                   ? analytics.most_affected_component[0]
-                  : analytics.most_affected_component ||
-                    "Unknown"
+                  : analytics.most_affected_component || "Unknown"
               }
             />
           </div>
 
-
           <div className="analytics-section">
             <h2>Exception Frequency</h2>
-
-            <AnalyticsList
-              data={analytics.exception_frequency}
-            />
+            <AnalyticsList data={analytics.exception_frequency} />
           </div>
-
 
           <div className="analytics-section">
             <h2>Severity Frequency</h2>
-
-            <AnalyticsList
-              data={analytics.severity_frequency}
-            />
+            <AnalyticsList data={analytics.severity_frequency} />
           </div>
-
 
           <div className="analytics-section">
             <h2>Component Frequency</h2>
-
-            <AnalyticsList
-              data={analytics.component_frequency}
-            />
+            <AnalyticsList data={analytics.component_frequency} />
           </div>
-
 
           <div className="analytics-section">
             <h2>Priority Frequency</h2>
-
-            <AnalyticsList
-              data={analytics.priority_frequency}
-            />
+            <AnalyticsList data={analytics.priority_frequency} />
           </div>
-
 
           <div className="analytics-section">
             <h2>Duplicate Status</h2>
-
-            <AnalyticsList
-              data={analytics.duplicate_status_frequency}
-            />
+            <AnalyticsList data={analytics.duplicate_status_frequency} />
           </div>
-
 
           <div className="analytics-section">
             <h2>Root Cause Frequency</h2>
-
-            <AnalyticsList
-              data={analytics.root_cause_frequency}
-            />
+            <AnalyticsList data={analytics.root_cause_frequency} />
           </div>
-
 
           <div className="analytics-section">
             <h2>Resolution Frequency</h2>
-
-            <AnalyticsList
-              data={analytics.resolution_frequency}
-            />
+            <AnalyticsList data={analytics.resolution_frequency} />
           </div>
-
-
-          {/* SEMANTIC CLUSTERS */}
 
           <div className="analytics-section">
             <h2>Semantic Clusters</h2>
 
-            {analytics.semantic_clusters &&
+            {Array.isArray(analytics.semantic_clusters) &&
             analytics.semantic_clusters.length > 0 ? (
               <div className="analytics-list">
-                {analytics.semantic_clusters.map(
-                  (cluster) => (
-                    <div
-                      className="analytics-row semantic-cluster-row"
-                      key={cluster.cluster_id}
-                    >
-                      <div>
-                        <strong>
-                          {cluster.cluster_id} -{" "}
-                          {cluster.theme}
-                        </strong>
-
-                        <p>
-                          {cluster.description}
-                        </p>
-
-                        <p>
-                          Bug IDs:{" "}
-                          {cluster.bug_ids &&
-                          cluster.bug_ids.length > 0
-                            ? cluster.bug_ids.join(", ")
-                            : "None"}
-                        </p>
-
-                        <p>
-                          Average Similarity:{" "}
-                          {cluster.average_similarity}%
-                        </p>
-                      </div>
+                {analytics.semantic_clusters.map((cluster) => (
+                  <div
+                    className="analytics-row semantic-cluster-row"
+                    key={cluster.cluster_id}
+                  >
+                    <div>
+                      <strong>
+                        {cluster.cluster_id} - {cluster.theme}
+                      </strong>
+                      <p>{cluster.description}</p>
+                      <p>
+                        Bug IDs:{" "}
+                        {cluster.bug_ids?.length
+                          ? cluster.bug_ids.join(", ")
+                          : "None"}
+                      </p>
+                      <p>
+                        Average Similarity: {cluster.average_similarity}%
+                      </p>
                     </div>
-                  )
-                )}
+                  </div>
+                ))}
               </div>
             ) : (
-              <p>
-                No semantic clusters available.
-              </p>
+              <p>No semantic clusters available.</p>
             )}
           </div>
 
-
           <div className="analytics-section">
             <h2>Time-Based Analysis</h2>
-
-            <AnalyticsList
-              data={analytics.time_analysis}
-            />
+            <AnalyticsList data={analytics.time_analysis} />
           </div>
         </>
       )}
@@ -1702,85 +1135,42 @@ function AnalyticsPage() {
   );
 }
 
-
-/* =================================================
-   ANALYTICS CARD
-================================================= */
-
-function AnalyticsCard({
-  title,
-  value
-}) {
+function AnalyticsCard({ title, value }) {
   return (
     <div className="analytics-card">
       <h3>{title}</h3>
-
       <strong>{value}</strong>
     </div>
   );
 }
 
-
-/* =================================================
-   ANALYTICS LIST
-================================================= */
-
-function AnalyticsList({
-  data
-}) {
-  if (
-    !data ||
-    Object.keys(data).length === 0
-  ) {
-    return (
-      <p>No data available.</p>
-    );
+function AnalyticsList({ data }) {
+  if (!data || Object.keys(data).length === 0) {
+    return <p>No data available.</p>;
   }
 
   return (
     <div className="analytics-list">
-      {Object.entries(data).map(
-        ([key, value]) => (
-          <div
-            className="analytics-row"
-            key={key}
-          >
-            <span>{key}</span>
-
-            <strong>
-              {Array.isArray(value)
-                ? value[1]
-                : value}
-            </strong>
-          </div>
-        )
-      )}
+      {Object.entries(data).map(([key, value]) => (
+        <div className="analytics-row" key={key}>
+          <span>{key}</span>
+          <strong>{Array.isArray(value) ? value[1] : value}</strong>
+        </div>
+      ))}
     </div>
   );
 }
 
-
-/* =================================================
-   FOOTER
-================================================= */
+/* FOOTER */
 
 function Footer() {
   return (
     <footer className="footer">
-      <h3>
-        ◆ Intelligent Bug Diagnosis Platform
-      </h3>
-
-      <p>
-        Infosys Springboard Internship Project
-      </p>
-
-      <p>
-        Multi-Agent AI Software Defect Diagnosis
-      </p>
+      <h3>◆ Intelligent Bug Diagnosis Platform</h3>
+      <p>Infosys Springboard Internship Project</p>
+      <p>Multi-Agent AI Software Defect Diagnosis</p>
     </footer>
   );
 }
-
 
 export default App;
